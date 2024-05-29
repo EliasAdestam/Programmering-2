@@ -1,72 +1,62 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Horse_Race
 {
     public partial class Form1 : Form
     {
+        // instanser av horse-klassen
+        private Horse horse1;
+        private Horse horse2;
+        private Horse horse3;
+        private Horse horse4;
+
+        // slumpgenerator för hästarna
+        private Random rnd = new Random();
+
+        // Konstruktor för Form1
         public Form1()
         {
             InitializeComponent();
+            InitializeHorses();
         }
-        //För att definera pictureBox.Left
-        int startHorse1, startHorse2, startHorse3, startHorse4;
 
-        //Startar racet eftersom allt är kopplat till Timern.
+        // Metod för att initiera hästarna
+        private void InitializeHorses()
+        {
+            horse1 = new Horse(pictureBox1, "Horse 1");
+            horse2 = new Horse(pictureBox2, "Horse 2");
+            horse3 = new Horse(pictureBox3, "Horse 3");
+            horse4 = new Horse(pictureBox4, "Horse 4");
+        }
+
+        // start-knappen
         private void button1_Click(object sender, EventArgs e)
         {
-            timer1.Enabled = true;
+            timer1.Enabled = true; // starta timern och racet
         }
-        //Race koden
+
+        // Händelsehanterare för timer-tick
         private void timer1_Tick(object sender, EventArgs e)
         {
-            //definerar bredden på hästarna
-            int widthHorse1 = pictureBox1.Width;
-            int widthHorse2 = pictureBox2.Width;
-            int widthHorse3 = pictureBox3.Width;
-            int widthHorse4 = pictureBox4.Width;
-            //Definerar finish till mållinjen
-            int finish = label5.Left;
-            //Ger farten till alla sprites
-            pictureBox1.Left = pictureBox1.Left + rnd.Next(5, 16);
-            pictureBox2.Left = pictureBox2.Left + rnd.Next(5, 16);
-            pictureBox3.Left = pictureBox3.Left + rnd.Next(5, 16);
-            pictureBox4.Left = pictureBox4.Left + rnd.Next(5, 16);
-            //Målgångsbetingelser
-            if(widthHorse1+pictureBox1.Left>=finish)
-            {
-                timer1.Enabled=false;
-            }
-            if(widthHorse2+pictureBox2.Left>=finish)
-            {
-                timer1.Enabled=false;
-            }
-            if(widthHorse3+pictureBox3.Left>=finish)
-            {
-                timer1.Enabled=false;
-            }
-            if(widthHorse4+pictureBox4.Left>=finish)
-            {
-                timer1.Enabled=false;
-            }
+            int finishLine = label5.Left; // Målets position
 
+            // flytta hästarna och kontrollera om någon har vunnit
+            MoveHorse(horse1, finishLine);
+            MoveHorse(horse2, finishLine);
+            MoveHorse(horse3, finishLine);
+            MoveHorse(horse4, finishLine);
         }
-        //Definerar rnd som Random
-        Random rnd = new Random();
-        //Laddar in hästarna
-        private void Form1_Load(object sender, EventArgs e)
+
+        // metod för att flytta en häst och kontrollera om den har vunnit
+        private void MoveHorse(Horse horse, int finishLine)
         {
-            startHorse1 = pictureBox1.Left;
-            startHorse2 = pictureBox2.Left;
-            startHorse3 = pictureBox3.Left;
-            startHorse4 = pictureBox4.Left;
+            horse.Move(rnd.Next(5, 16)); // hastighet slumpgenerator
+            if (horse.HasFinished(finishLine))
+            {
+                timer1.Enabled = false; // stoppa timern och racet om någon vunnit
+                MessageBox.Show($"{horse.Name} vann!"); // meddelande om vinnare
+            }
         }
     }
 }
